@@ -1,0 +1,12 @@
+function  Data = buildData(rawData,altitude,j)
+Long = rawData.Longitude;
+Lat = rawData.Latitude;
+Alt = ones(size(rawData,1),1)*altitude;
+AccX = rawData.AccX;
+AccY = rawData.AccY;
+AccZ = rawData.AccZ;
+[Roll,Pitch] = FindAngle(rawData,j);
+Yaw = deg2rad(rawData.Heading);
+dt = 1/10;
+Time = 0:dt:(length(rawData.AccX)-1)*dt;
+Data = [Time',Long,Lat,Alt,AccX,AccY,AccZ,Roll,Pitch,Yaw];
