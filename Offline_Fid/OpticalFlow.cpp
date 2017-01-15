@@ -41,11 +41,14 @@ void OpticalFlow(){
 	int tempX = 0;
 	int tempY = 0;
 	locationStruct filteredLocation;
+	locationStruct prevLocation;
 	
 	//filter
 	filteredLocation.x = 0.0;
 	filteredLocation.y = 0.0;
-	float alpha = 0.75;
+	prevLocation.x = 0.0;
+	prevLocation.y = 0.0;
+	float alpha = 0.5;
 
 	/* define matrices */
 	Mat cameraMatrix = (Mat_<double>(3, 3) <<
@@ -161,7 +164,7 @@ void OpticalFlow(){
 
 				// calculate final x, y location (apply prediction)
 				locationStruct locationCorrectionAfterYaw;
-				locationCorrectionAfterYaw.x = ((lastFlowStep.x + predLocation.x) / WIDTH_RES)*rovX;
+				locationCorrectionAfterYaw.x = ((lastFlowStep.x - predLocation.x) / WIDTH_RES)*rovX;
 				locationCorrectionAfterYaw.y = ((lastFlowStep.y - predLocation.y) / HEIGHT_RES)*rovY;
 
 #ifdef YAW_ACTIVE
@@ -205,6 +208,10 @@ void OpticalFlow(){
 #ifdef QT
 			w.UpdatePlot(currLocation.x, currLocation.y);
 #endif
+			
+			filteredLocation.x = alpha * filteredLocation.x + (1 - alpha) * currLocation.x;
+			filteredLocation.y = alpha * filteredLocation.y + (1 - alpha) * currLocation.y;
+ 			
 			cout << offset << "," << currLocation.x << "," << currLocation.y << endl;
 			//cout << offset << "," << filteredLocation.x << "," << filteredLocation.y << endl;
 		}

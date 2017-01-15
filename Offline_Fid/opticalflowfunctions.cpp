@@ -99,8 +99,8 @@ void *OpticalFlowPerSection(void *currSectionInfo)
 		}
 		const Point2f& currPoint = pyrLKOutput[i];
 		const Point2f& prevPoint = currSection->grid[i];
-				line(currSection->prevFrameSection, currSection->grid[i], pyrLKOutput[i], Scalar(0, 255, 0));
-				circle(currSection->prevFrameSection, currSection->grid[i], 2, Scalar(0, 255, 0), -1);
+//				line(currSection->prevFrameSection, currSection->grid[i], pyrLKOutput[i], Scalar(0, 255, 0));
+//				circle(currSection->prevFrameSection, currSection->grid[i], 2, Scalar(0, 255, 0), -1);
 		distPixelx += currPoint.x - prevPoint.x;
 		distPixely += currPoint.y - prevPoint.y;
 		counter++;

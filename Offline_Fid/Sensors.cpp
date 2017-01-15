@@ -25,7 +25,7 @@ std::ifstream *VID_timestamp;
 VideoCapture *VIDEO;
 
 //Global parameters to update
-int end_of_file = 0;
+int end_of_file;
 float deltaT;
 #endif
 
@@ -68,7 +68,7 @@ void *updateSensors(void *args){
 	Mat jank;
 	video_time = 0;
 	//first pull
-	
+	end_of_file = 0;
 	*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw;
 	eulerFromSensors.pitch = pitch;
 	eulerFromSensors.roll = roll;
@@ -96,14 +96,15 @@ void *updateSensors(void *args){
 			distanceSonar = alt;
 			offset = file_time;
 			//video
-			while (file_time + deltaT > video_time && (!currentframe.empty() || !jank.empty())){
+			while (file_time + deltaT > video_time && (!currentframe.empty() || !jank.empty() || !VID_timestamp->eof())){
 				*VIDEO >> jank;
 				*VID_timestamp >> video_time;
 			}
 			*VIDEO >> currentframe;
 			*VID_timestamp >> video_time;
 			if (currentframe.empty() || VID_timestamp->eof()){
-				break;
+				end_of_file = 1;
+				return NULL;
 			}
 			Sleep(100);
 		}
