@@ -83,15 +83,16 @@ void *updateSensors(void *args){
 	jank = currentframe;
 	*VID_timestamp >> video_time;
 	//loop pull
-	while (!IMU->eof()){
+	while (!(IMU->eof())){
 		if (init){
 			prevEulerFromSensors = eulerFromSensors;
-			*IMU >> file_time >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> pitch >> comma >> roll >> comma >> yaw >> comma >> gpslon >> comma >> gpslat >> comma >> alt;
+			*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw;
 			eulerFromSensors.pitch = pitch;
 			eulerFromSensors.roll = roll;
 			eulerFromSensors.yaw = yaw;
 			currGPSCoords.lon = gpslon;
 			currGPSCoords.lat = gpslat;
+			eulerSpeedChanged.store(true);
 			distanceSonar = alt;
 			offset = file_time;
 			//video
@@ -101,7 +102,7 @@ void *updateSensors(void *args){
 			}
 			*VIDEO >> currentframe;
 			*VID_timestamp >> video_time;
-			if (currentframe.empty()){
+			if (currentframe.empty() || VID_timestamp->eof()){
 				break;
 			}
 			Sleep(100);

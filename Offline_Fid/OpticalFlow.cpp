@@ -40,6 +40,12 @@ void OpticalFlow(){
 
 	int tempX = 0;
 	int tempY = 0;
+	locationStruct filteredLocation;
+	
+	//filter
+	filteredLocation.x = 0.0;
+	filteredLocation.y = 0.0;
+	float alpha = 0.75;
 
 	/* define matrices */
 	Mat cameraMatrix = (Mat_<double>(3, 3) <<
@@ -132,12 +138,14 @@ void OpticalFlow(){
 			// calculate range of view - 2*tan(fov/2)*distance
 #ifdef SONAR_ACTIVE
 			// currently dont take the median, take the last sample
-			rovX = 2 * 0.44523 * 100 * distanceSonar*cos(eulerFromSensors.roll)*cos(eulerFromSensors.pitch);// 2 * tan(48/2) * dist(cm)
-			rovY = 2 * 0.32492 * 100 * distanceSonar*cos(eulerFromSensors.roll)*cos(eulerFromSensors.pitch);// 2 * tan(36/2) * dist(cm)
+			// FOV_X = 63.65
+			// FOV_Y = 44.96
+			rovX = 2 * 0.6206305052 * 100 * distanceSonar*cos(eulerFromSensors.roll)*cos(eulerFromSensors.pitch);// 2 * tan(xfov/2) * dist(cm)
+			rovY = 2 * 0.4138046654 * 100 * distanceSonar*cos(eulerFromSensors.roll)*cos(eulerFromSensors.pitch);// 2 * tan(yfov/2) * dist(cm)
 #else
 			double dist = 87 * (cos(eulerFromSensors.roll)*cos(eulerFromSensors.pitch));             // distance from surface in cm
-			rovX = 2 * 0.44523*dist; 		// 2 * tan(48/2) * dist
-			rovY = 2 * 0.32492*dist;		// 2 * tan(36/2) * dist
+			rovX = 2 * 0.6206305052*dist; 		// 2 * tan(xfov/2) * dist
+			rovY = 2 * 0.4138046654*dist;		// 2 * tan(yfov/2) * dist
 #endif
 			// If euler speed changed - calculate and apply x,y prediction
 			if (eulerSpeedChanged.load())
@@ -146,10 +154,10 @@ void OpticalFlow(){
 
 				// DeltaX = Delta_Pitch * (Wx / fov_x)
 				// DeltaY = Delta_Roll * (Wy / fox_y)
-				predLocation.x = ((eulerFromSensors.pitch - prevEulerFromSensors.pitch)*(180 / PI)*WIDTH_RES) / 48;
-				predLocation.y = ((eulerFromSensors.roll - prevEulerFromSensors.roll)*(180 / PI)*HEIGHT_RES) / 36;
+				predLocation.x = ((eulerFromSensors.pitch - prevEulerFromSensors.pitch)*(180 / PI)*WIDTH_RES) / 63.65;
+				predLocation.y = ((eulerFromSensors.roll - prevEulerFromSensors.roll)*(180 / PI)*HEIGHT_RES) / 44.96;
 
-				cout << "Sonar with factor: " << distanceSonar << endl;
+				//cout << "Sonar with factor: " << distanceSonar << endl;
 
 				// calculate final x, y location (apply prediction)
 				locationStruct locationCorrectionAfterYaw;
@@ -190,13 +198,15 @@ void OpticalFlow(){
 				currLocation.y += locationCorrectionAfterYaw.y;
 				tempX += lastFlowStep.x;
 				tempY += lastFlowStep.y;
+				
 			}
 
 			// Update Location Plot
 #ifdef QT
 			w.UpdatePlot(currLocation.x, currLocation.y);
 #endif
-			cout <<"timestamp = "<<offset<<" X = "<< currLocation.x << " Y = " << currLocation.y << endl;
+			cout << offset << "," << currLocation.x << "," << currLocation.y << endl;
+			//cout << offset << "," << filteredLocation.x << "," << filteredLocation.y << endl;
 		}
 
 		/*break conditions

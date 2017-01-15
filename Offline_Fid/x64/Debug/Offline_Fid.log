@@ -1,29 +1,20 @@
-﻿Build started 1/11/2017 10:25:50 AM.
+﻿Build started 1/15/2017 3:32:23 PM.
      1>Project "C:\Users\Ofer\documents\visual studio 2013\Projects\Offline_Fid\Offline_Fid\Offline_Fid.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /ID:\pthread_lib\ /IC:\Users\Ofer\Documents\opencv\build\include /Zi /nologo /W3 /WX- /sdl /Od /D OFFLINE /D _SHOW_VID /D SONAR_ACTIVE /D YAW_ACTIVE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt anglecorrection.cpp Offline_Fid.cpp OpticalFlow.cpp opticalflowfunctions.cpp Sensors.cpp
-         Sensors.cpp
-         opticalflowfunctions.cpp
-     1>opticalflowfunctions.cpp(9): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-     1>opticalflowfunctions.cpp(10): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
-     1>opticalflowfunctions.cpp(11): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-     1>opticalflowfunctions.cpp(16): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /ID:\pthread_lib\ /IC:\Users\Ofer\Documents\opencv\build\include /Zi /nologo /W3 /WX- /sdl /Od /D OFFLINE /D _SHOW_VID /D SONAR_ACTIVE /D YAW_ACTIVE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt OpticalFlow.cpp
          OpticalFlow.cpp
-     1>OpticalFlow.cpp(94): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(95): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(99): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
      1>OpticalFlow.cpp(100): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(104): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(101): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
      1>OpticalFlow.cpp(105): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(109): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(106): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
      1>OpticalFlow.cpp(110): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(169): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(170): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(191): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
-     1>OpticalFlow.cpp(192): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
-         Offline_Fid.cpp
-         anglecorrection.cpp
-         Generating Code...
+     1>OpticalFlow.cpp(111): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(115): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(116): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(177): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(178): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(199): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
+     1>OpticalFlow.cpp(200): warning C4244: '+=' : conversion from 'double' to 'int', possible loss of data
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Ofer\documents\visual studio 2013\Projects\Offline_Fid\x64\Debug\Offline_Fid.exe" /INCREMENTAL /NOLOGO /LIBPATH:D:\pthread_lib\ /LIBPATH:C:\Users\Ofer\Documents\opencv\build\x64\vc12\lib pthreadVC2.lib opencv_world310d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Ofer\documents\visual studio 2013\Projects\Offline_Fid\x64\Debug\Offline_Fid.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Ofer\documents\visual studio 2013\Projects\Offline_Fid\x64\Debug\Offline_Fid.lib" /MACHINE:X64 x64\Debug\anglecorrection.obj
          x64\Debug\Offline_Fid.obj
@@ -35,4 +26,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:22.33
+Time Elapsed 00:00:07.64
