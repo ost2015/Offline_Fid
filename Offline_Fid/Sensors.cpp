@@ -96,7 +96,7 @@ void *updateSensors(void *args){
 			distanceSonar = alt;
 			offset = file_time;
 			//video
-			while (file_time + deltaT > video_time && (!currentframe.empty() || !jank.empty() || !VID_timestamp->eof())){
+			while (file_time + deltaT > video_time && !currentframe.empty() && !jank.empty() && !VID_timestamp->eof()){
 				*VIDEO >> jank;
 				*VID_timestamp >> video_time;
 			}

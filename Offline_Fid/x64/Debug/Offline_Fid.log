@@ -1,4 +1,4 @@
-﻿Build started 1/15/2017 5:22:53 PM.
+﻿Build started 1/15/2017 5:27:22 PM.
      1>Project "C:\Users\Ofer\documents\visual studio 2013\Projects\Offline_Fid\Offline_Fid\Offline_Fid.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /ID:\pthread_lib\ /IC:\Users\Ofer\Documents\opencv\build\include /Zi /nologo /W3 /WX- /sdl /Od /D OFFLINE /D _SHOW_VID /D SONAR_ACTIVE /D YAW_ACTIVE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt Sensors.cpp
@@ -14,4 +14,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:07.77
+Time Elapsed 00:00:11.55
