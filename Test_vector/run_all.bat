@@ -2,6 +2,7 @@
 
 REM if %1="" goto blank
 for /R %1 %%a in (*.txt) do ( 
+	echo runs %%~na 
 	..\x64\Debug\Offline_Fid.exe %%~dpa\ > %%~dpa\temp_%%~na.csv 
 )
 
@@ -16,19 +17,19 @@ mkdir ..\Results\%%~na\
 	del /q %%~dpa\temp_%%~na.csv
 )
 exit /b 1
-:blank
+REM :blank
 
-for /R %CD% %%a in (*.txt) do ( 
-	..\x64\Debug\Offline_Fid.exe %%~dpa\ > %%~dpa\temp_%%~na.csv 
-)
+REM for /R %CD% %%a in (*.txt) do ( 
+	REM ..\x64\Debug\Offline_Fid.exe %%~dpa\ > %%~dpa\temp_%%~na.csv 
+REM )
 
-echo finished running. creating log files...
+REM echo finished running. creating log files...
 
-for /R %CD% %%a in (*.txt) do (
-	for /f skip^=5^ usebackq^ delims^=^ eol^= %%b in (%%~dpa\temp_%%~na.csv) do ( 
-		mkdir ..\Results\%%~na\
-		echo %%b >> ..\Results\%%~na\OF_log.csv
-	)
+REM for /R %CD% %%a in (*.txt) do (
+	REM for /f skip^=5^ usebackq^ delims^=^ eol^= %%b in (%%~dpa\temp_%%~na.csv) do ( 
+		REM mkdir ..\Results\%%~na\
+		REM echo %%b >> ..\Results\%%~na\OF_log.csv
+	REM )
 	
-	del /q %%~dpa\temp_%%~na.csv
-)
+	REM del /q %%~dpa\temp_%%~na.csv
+REM )
