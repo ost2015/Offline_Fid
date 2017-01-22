@@ -62,6 +62,7 @@ void *updateSensors(void *args){
 	float video_time=0,file_time;
 	float pitch = 0, roll = 0, yaw = 0, alt = 0;
 	float AccX = 0, AccY = 0, AccZ = 0;
+	float jank_data;
 	//Future variables gyro_x = 0, gyro_y = 0, gyro_z = 0, gravity_x = 0, gravity_y = 0, gravity_z = 0;
 	char comma;
 	double gpslon = 0, gpslat = 0;
@@ -69,7 +70,7 @@ void *updateSensors(void *args){
 	video_time = 0;
 	//first pull
 	end_of_file = 0;
-	*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw;
+	*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw >> comma >> jank_data >> comma >> jank_data;
 	eulerFromSensors.pitch = pitch;
 	eulerFromSensors.roll = roll;
 	eulerFromSensors.yaw = yaw;
@@ -86,7 +87,7 @@ void *updateSensors(void *args){
 	while (!(IMU->eof())){
 		if (init){
 			prevEulerFromSensors = eulerFromSensors;
-			*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw;
+			*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw >> comma >> jank_data >> comma >> jank_data;
 			eulerFromSensors.pitch = pitch;
 			eulerFromSensors.roll = roll;
 			eulerFromSensors.yaw = yaw;
