@@ -14,11 +14,12 @@ for i=1:length(directories)
 %         plot3(log(:,x),log(:,y),log(:,time),'b');
         plot(log(:,x),log(:,y),'-b');
 %         legend('start','x-y-t', 'x-y');
-        title (directories(i).name);
-        xlabel('x [cm]');
-        ylabel('y [cm]');
-        zlabel('t [sec]');
+        title (['\fontsize{20}',directories(i).name]);
+        xlabel('\fontsize{16}x [cm]');
+        ylabel('\fontsize{16}y [cm]');
+%         zlabel('t [sec]');
         grid on;
+        saveas(gcf,[dest,'\',directories(i).name,'.jpg']);
     end
 end
 %% filter log
