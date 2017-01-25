@@ -1,0 +1,15 @@
+function Route = RealRoute(timing)
+[m,~]=size(timing);
+fs = 0.1; %sample rate
+t = 0;
+cornerStart = zeros(2,1);
+for i = 1 : m
+    xAngle = cos(timing.yaw(i)); yAngle = sin(timing.yaw(i));
+    cornerEnd = [timing.range(i) * xAngle; timing.range(i) * yAngle];
+    NumOfSample = (timing.time(i)-t) * fs;
+    
+    
+    
+    t = timing.time(i); % for next loop
+    cornerStart = cornerEnd; % for next loop
+end

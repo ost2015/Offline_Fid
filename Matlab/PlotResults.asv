@@ -1,0 +1,28 @@
+ccc;
+time = 1; x = 2; y = 3;
+NumOfFiles = 2;
+startYaw = 1.86;
+ReadDest = 'C:\Users\Nir\Documents\Offline_Fid\Results\';
+directories = dir(ReadDest);
+for i=1:length(directories)
+    dest = [ReadDest,directories(i).name];
+    files = dir([dest,'\*.csv']); %search for csv files
+    if ~isempty(files)
+        log = csvread([dest,'\',files(1).name]);
+        if size(files,1)==2
+            timing = readtable([dest,'\',files(2).name]);
+            timing.time(end) = log(end,1);
+            Route = RealRoute(timing);
+        end
+        figure ('name', directories(i).name);
+        plot(log(1,x),log(1,y),'*r','linewidth',8);
+        hold on;
+        plot(log(:,x),log(:,y),'-b');
+        
+        title (['\fontsize{20}',directories(i).name]);
+        xlabel('\fontsize{16}x [cm]');
+        ylabel('\fontsize{16}y [cm]');
+        grid on;
+%         saveas(gcf,[dest,'\',directories(i).name,'.jpg']);
+    end
+end
