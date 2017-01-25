@@ -135,9 +135,16 @@ void OpticalFlow(){
 			pthread_join(bottomRight_thread, NULL);
 			init = 1;
 			// merge the outputs
+			/*max*/
+			lastFlowStep.x = max(max(lastFlowStepSections[0].x, lastFlowStepSections[1].x) ,max( lastFlowStepSections[2].x, lastFlowStepSections[3].x));
+			lastFlowStep.y = max(max(lastFlowStepSections[0].y, lastFlowStepSections[1].y), max( lastFlowStepSections[2].y, lastFlowStepSections[3].y));
+
+
+
+			/*avg
 			lastFlowStep.x = (lastFlowStepSections[0].x + lastFlowStepSections[1].x + lastFlowStepSections[2].x + lastFlowStepSections[3].x) / 4;
 			lastFlowStep.y = (lastFlowStepSections[0].y + lastFlowStepSections[1].y + lastFlowStepSections[2].y + lastFlowStepSections[3].y) / 4;
-
+			*/
 			// calculate range of view - 2*tan(fov/2)*distance
 #ifdef SONAR_ACTIVE
 			// currently dont take the median, take the last sample

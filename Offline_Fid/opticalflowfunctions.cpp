@@ -17,7 +17,7 @@ locationStruct calculateNewLocationByYaw(locationStruct lastFlowStep){
 	locationStruct outputLocation;
 
 	outputLocation.x = lastFlowStep.x * cos(eulerFromSensors.yaw) + lastFlowStep.y * cos(yYaw);
-	outputLocation.y = -(lastFlowStep.x * sin(eulerFromSensors.yaw) + lastFlowStep.y * sin(yYaw));
+	outputLocation.y = +(lastFlowStep.x * sin(eulerFromSensors.yaw) + lastFlowStep.y * sin(yYaw));
 
 	return outputLocation;
 }
