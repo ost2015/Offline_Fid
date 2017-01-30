@@ -81,7 +81,7 @@ void OpticalFlow(){
 	// take out frame- still distorted
 	while (!end_of_file){
 		origFrame = currentframe;
-
+		if (origFrame.empty()) continue;
 		// convert to gray
 		cvtColor(origFrame, processedFrame, COLOR_BGR2GRAY, CV_8U);
 
