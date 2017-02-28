@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 	pthread_t update;
 	pthread_create(&update, NULL, updateSensors, NULL);
 	Sleep(100);
-	OpticalFlow();
+	OpticalFlow(argv[1]);
 #ifdef SHOW_VID
 	while (!end_of_file){
 		cout << "Pitch = " << eulerFromSensors.pitch << ", Roll = " << eulerFromSensors.roll << ", Yaw = " << eulerFromSensors.yaw << endl;

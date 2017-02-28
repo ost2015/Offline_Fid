@@ -3,18 +3,14 @@
 REM if %1="" goto blank
 for /R %1 %%a in (*.txt) do ( 
 	echo runs %%~na 
-	..\x64\Debug\Offline_Fid.exe %%~dpa\ > %%~dpa\temp_%%~na.csv 
+	..\x64\Debug\Offline_Fid.exe %%~dpa\ 
 )
 
 echo finished running. creating log files...
-
+pause
 for /R %1 %%a in (*.txt) do (
 mkdir ..\Results\%%~na\
-	for /f skip^=5^ usebackq^ delims^=^ eol^= %%b in (%%~dpa\temp_%%~na.csv) do ( 
-		echo %%b >> ..\Results\%%~na\OF_log.csv
-	)
-	
-	del /q %%~dpa\temp_%%~na.csv
+	move %%~dpa\log.csv ..\Results\%%~na\OF_log.csv 
 )
 exit /b 1
 REM :blank

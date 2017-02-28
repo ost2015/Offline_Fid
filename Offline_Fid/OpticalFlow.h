@@ -1,1 +1,1 @@
-void OpticalFlow();
+void OpticalFlow(char* path);

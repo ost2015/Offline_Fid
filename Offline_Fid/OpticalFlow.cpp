@@ -10,6 +10,8 @@
 #include <pthread.h>
 #include <time.h>
 #include <vector>
+#include <fstream>
+#include <chrono>
 // OpenCV
 #include "opencv2/video/tracking.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -36,7 +38,7 @@ int init=0;
 /********************************* Main Optical Flow Function *****************************/
 /* calculate the location of the UAV according the input frame from the camera and the angles of the body*/
 //int opticalFlow(int source, MainWindow &w){
-void OpticalFlow(){
+void OpticalFlow(char* path){
 
 	int tempX = 0;
 	int tempY = 0;
@@ -49,7 +51,20 @@ void OpticalFlow(){
 	prevLocation.x = 0.0;
 	prevLocation.y = 0.0;
 	float alpha = 0.5;
-
+	
+	//outputs
+	//file
+	char File_name_OUTPUT[50];
+	strcpy_s(File_name_OUTPUT, path);
+	strcat_s(File_name_OUTPUT, "\\log.csv");
+	std::ofstream *output;
+	output = new std::ofstream(File_name_OUTPUT, std::ofstream::out);
+	//console
+	int frame=0;
+	double delta;
+	chrono::steady_clock::time_point tic = chrono::steady_clock::now();;
+	chrono::steady_clock::time_point toc = chrono::steady_clock::now();
+	
 	/* define matrices */
 	Mat cameraMatrix = (Mat_<double>(3, 3) <<
 		3.33277197938593e+03, 0, 2.06813063483159e+03,
@@ -80,8 +95,16 @@ void OpticalFlow(){
 	// for each frame calculate optical flow
 	// take out frame- still distorted
 	while (!end_of_file){
-		origFrame = currentframe;
-		if (origFrame.empty()) continue;
+		try{
+			origFrame = currentframe;
+			if (origFrame.empty()) continue;
+		}
+		catch (...){
+			cout << "image not found" << endl;
+			continue;
+		}
+		if (frame > 1500) break; //for some reson after 1500 frame the app crash.
+		frame++;
 		// convert to gray
 		cvtColor(origFrame, processedFrame, COLOR_BGR2GRAY, CV_8U);
 
@@ -133,18 +156,26 @@ void OpticalFlow(){
 			pthread_join(topRight_thread, NULL);
 			pthread_join(bottomLeft_thread, NULL);
 			pthread_join(bottomRight_thread, NULL);
+			if (!init){
+				cout << "Go!" << endl;
+				//start clock
+				tic = chrono::steady_clock::now();
+			}
+				
+			if (!(frame % 50))
+				cout << "frame: " << frame << " offset: " << offset << endl;
 			init = 1;
 			// merge the outputs
-			/*max*/
+			/*max
 			lastFlowStep.x = max(max(lastFlowStepSections[0].x, lastFlowStepSections[1].x) ,max( lastFlowStepSections[2].x, lastFlowStepSections[3].x));
 			lastFlowStep.y = max(max(lastFlowStepSections[0].y, lastFlowStepSections[1].y), max( lastFlowStepSections[2].y, lastFlowStepSections[3].y));
+			*/
 
 
-
-			/*avg
+			/*avg*/
 			lastFlowStep.x = (lastFlowStepSections[0].x + lastFlowStepSections[1].x + lastFlowStepSections[2].x + lastFlowStepSections[3].x) / 4;
 			lastFlowStep.y = (lastFlowStepSections[0].y + lastFlowStepSections[1].y + lastFlowStepSections[2].y + lastFlowStepSections[3].y) / 4;
-			*/
+			
 			// calculate range of view - 2*tan(fov/2)*distance
 #ifdef SONAR_ACTIVE
 			// currently dont take the median, take the last sample
@@ -219,7 +250,9 @@ void OpticalFlow(){
 			filteredLocation.x = alpha * filteredLocation.x + (1 - alpha) * currLocation.x;
 			filteredLocation.y = alpha * filteredLocation.y + (1 - alpha) * currLocation.y;
  			
-			cout << offset << "," << currLocation.x << "," << currLocation.y << endl;
+
+			(*output) << offset << "," << currLocation.x << "," << currLocation.y << endl;
+			//cout << offset << "," << currLocation.x << "," << currLocation.y << endl;
 			//cout << offset << "," << filteredLocation.x << "," << filteredLocation.y << endl;
 		}
 
@@ -235,6 +268,12 @@ void OpticalFlow(){
 #ifdef VIDEO_ACTIVE
 	destroyWindow("flow");
 #endif
+	//stop clock
+	toc = chrono::steady_clock::now();
+	//calc delta
+	delta = (chrono::duration_cast<chrono::milliseconds>(toc - tic).count());
+	cout << "total runtime - " << delta / 1000 << " seconds. \nActual test length - " << offset << endl;
 
+	output->close();
 	return ;
 }
