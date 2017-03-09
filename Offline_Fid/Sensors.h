@@ -16,4 +16,5 @@ using namespace std;
 
 void *open_data(char* path);
 void *updateSensors(void *args);
+//void updateSensors();
 void close_data();

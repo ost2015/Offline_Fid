@@ -7,6 +7,7 @@
 #include <cmath>
 #include <string.h>
 #include <fstream>
+#include <chrono>
 #include "opencv2/video/tracking.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/videoio/videoio.hpp"
@@ -33,6 +34,7 @@ gpsCoords currGPSCoords;
 gpsCoords initGPSCoords;
 euler_angles eulerFromSensors;
 euler_angles prevEulerFromSensors;
+gyro GyroFromSensors;
 atomic<bool> eulerSpeedChanged;//dont know what it doest
 Mat currentframe;
 float distanceSonar;
@@ -59,23 +61,33 @@ void *open_data(char* path){
 	return NULL;
 }
 void *updateSensors(void *args){
+//void updateSensors(){
 	float video_time=0,file_time;
 	float pitch = 0, roll = 0, yaw = 0, alt = 0;
 	float AccX = 0, AccY = 0, AccZ = 0;
 	float jank_data;
-	//Future variables gyro_x = 0, gyro_y = 0, gyro_z = 0, gravity_x = 0, gravity_y = 0, gravity_z = 0;
+	float gyro_x = 0, gyro_y = 0, gyro_z = 0;
+	// gravity_x = 0, gravity_y = 0, gravity_z = 0;
 	char comma;
 	double gpslon = 0, gpslat = 0;
 	Mat jank;
 	video_time = 0;
+	// timing
+	chrono::steady_clock::time_point tic = chrono::steady_clock::now();
+	chrono::steady_clock::time_point toc = chrono::steady_clock::now();
+
 	//first pull
 	end_of_file = 0;
-	*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw >> comma >> jank_data >> comma >> jank_data;
+	*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw >> comma >> jank_data >> comma >> jank_data >> comma >> gyro_x >> comma >> gyro_y >> comma >> gyro_z;
 	eulerFromSensors.pitch = pitch;
 	eulerFromSensors.roll = roll;
 	eulerFromSensors.yaw = yaw;
 	currGPSCoords.lon = gpslon;
 	currGPSCoords.lat = gpslat;
+	GyroFromSensors.x = gyro_x;
+	GyroFromSensors.y = gyro_y;
+	GyroFromSensors.z = gyro_z;
+
 	initGPSCoords = currGPSCoords;
 	distanceSonar = alt;
 	offset = file_time;
@@ -86,13 +98,19 @@ void *updateSensors(void *args){
 	//loop pull
 	while (!(IMU->eof())){
 		if (init){
+			tic = chrono::steady_clock::now();
+			
 			prevEulerFromSensors = eulerFromSensors;
-			*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw >> comma >> jank_data >> comma >> jank_data;
+			*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw >> comma >> jank_data >> comma >> jank_data >> comma >> gyro_x >> comma >> gyro_y >> comma >> gyro_z;
 			eulerFromSensors.pitch = pitch;
 			eulerFromSensors.roll = roll;
 			eulerFromSensors.yaw = yaw;
 			currGPSCoords.lon = gpslon;
 			currGPSCoords.lat = gpslat;
+			GyroFromSensors.x = gyro_x;
+			GyroFromSensors.y = gyro_y;
+			GyroFromSensors.z = gyro_z;
+
 			eulerSpeedChanged.store(true);
 			distanceSonar = alt;
 			offset = file_time;
@@ -106,12 +124,20 @@ void *updateSensors(void *args){
 			if (currentframe.empty() || VID_timestamp->eof()){
 				end_of_file = 1;
 				return NULL;
+				//return;
 			}
-			Sleep(100);
+			//cout << "alive offset: " << file_time << endl;
+			toc = chrono::steady_clock::now();
+			while ((chrono::duration_cast<chrono::milliseconds>(toc - tic).count()) < 100){
+				Sleep(10);
+				toc = chrono::steady_clock::now();
+			}
+			//Sleep(94); //0.1 sec minus read time 0.05 sec
 		}
 	}
 	end_of_file = 1;
 	return NULL;
+	//return;
 }
 void close_data(){
 	IMU->close();

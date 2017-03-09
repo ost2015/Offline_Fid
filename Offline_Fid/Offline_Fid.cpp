@@ -19,6 +19,7 @@
 #include "opencv2/videoio/videoio.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "pthread.h"
+#include <thread>
 
 using namespace std::chrono;
 using namespace cv;
@@ -26,7 +27,9 @@ using namespace cv;
 int main(int argc, char **argv) {
 	cout << "reading from input file" << endl;
 	open_data(argv[1]);
+	// thread* update;
 	pthread_t update;
+	//update = new thread(updateSensors);
 	pthread_create(&update, NULL, updateSensors, NULL);
 	Sleep(100);
 	OpticalFlow(argv[1]);

@@ -27,6 +27,12 @@ typedef struct{
 }locationStruct;
 
 typedef struct{
+	double x;
+	double y;
+	double z;
+}gyro;
+
+typedef struct{
 	double lat;
 	double lon;
 	double alt;
@@ -42,6 +48,7 @@ extern locationStruct gpsLocation;
 // struct of Euler angles
 extern euler_angles eulerFromSensors;
 extern euler_angles prevEulerFromSensors;
+extern gyro GyroFromSensors;
 extern std::atomic<bool> eulerSpeedChanged;
 // distance- input from sensor
 extern float prevDistanceSonar;

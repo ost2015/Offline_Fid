@@ -1,16 +1,16 @@
 @echo off
 
-REM if %1="" goto blank
+if %1="" goto blank
 for /R %1 %%a in (*.txt) do ( 
 	echo runs %%~na 
-	..\x64\Debug\Offline_Fid.exe %%~dpa\ 
+	..\x64\Release\Offline_Fid.exe %%~dpa\ 
 )
 
 echo finished running. creating log files...
 pause
 for /R %1 %%a in (*.txt) do (
 mkdir ..\Results\%%~na\
-	move %%~dpa\log.csv ..\Results\%%~na\OF_log.csv 
+	copy /Y %%~dpa\OF_log.csv ..\Results\%%~na\OF_log.csv 
 )
 exit /b 1
 REM :blank

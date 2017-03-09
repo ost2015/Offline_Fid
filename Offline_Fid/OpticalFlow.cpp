@@ -34,35 +34,85 @@ locationStruct lastFlowStep;
 locationStruct lastFlowStepSections[4];
 locationStruct gpsLocation;
 int init=0;
+class gyro_buffer{
+public:
+	float buffer[10];
+	int head;
+	float avg;
+	gyro_buffer():head(9),avg(0){ int i; for (i = 0; i < 10; i++) buffer[i] = 0; }
+	void push_n_calc(float x){ 
+		head = (head + 1) % 10;
+		avg = avg - buffer[head] * 0.1 + x*0.1;
+		buffer[head] = x;
+	}
+
+};
+
+int run_OF_threads(sectionInfo topLeft, sectionInfo topRight, sectionInfo bottomLeft, sectionInfo bottomRight){
+	
+	OpticalFlowPerSection(&topLeft);
+	OpticalFlowPerSection(&topRight);
+	OpticalFlowPerSection(&bottomLeft);
+	OpticalFlowPerSection(&bottomRight);
+	
+	
+	/*
+	pthread_t bottomLeft_thread, bottomRight_thread;
+	pthread_t topLeft_thread, topRight_thread;
+	pthread_create(&topLeft_thread, NULL, OpticalFlowPerSection, &topLeft);
+	pthread_create(&topRight_thread, NULL, OpticalFlowPerSection, &topRight);
+	pthread_create(&bottomLeft_thread, NULL, OpticalFlowPerSection, &bottomLeft);
+	pthread_create(&bottomRight_thread, NULL, OpticalFlowPerSection, &bottomRight);
+
+
+
+	pthread_join(topLeft_thread, NULL);
+	pthread_join(topRight_thread, NULL);
+	pthread_join(bottomLeft_thread, NULL);
+	pthread_join(bottomRight_thread, NULL);
+	*/
+
+
+	return 0;
+}
+
 
 /********************************* Main Optical Flow Function *****************************/
 /* calculate the location of the UAV according the input frame from the camera and the angles of the body*/
 //int opticalFlow(int source, MainWindow &w){
 void OpticalFlow(char* path){
-
+	
 	int tempX = 0;
 	int tempY = 0;
 	locationStruct filteredLocation;
 	locationStruct prevLocation;
-	
+	locationStruct locationCorrectionAfterYaw;
+	sectionInfo topLeft, topRight;
+	sectionInfo bottomLeft, bottomRight;
+
 	//filter
 	filteredLocation.x = 0.0;
 	filteredLocation.y = 0.0;
 	prevLocation.x = 0.0;
 	prevLocation.y = 0.0;
-	float alpha = 0.5;
-	
+	float alpha = 0.0;
+	float gyro_threshold = 0.2;
+	gyro_buffer gyro_z_filter;
 	//outputs
 	//file
+	vector<float> x;
+	vector<float> y;
+	vector<float> time;
+
 	char File_name_OUTPUT[50];
 	strcpy_s(File_name_OUTPUT, path);
-	strcat_s(File_name_OUTPUT, "\\log.csv");
+	strcat_s(File_name_OUTPUT, "\\OF_log.csv");
 	std::ofstream *output;
 	output = new std::ofstream(File_name_OUTPUT, std::ofstream::out);
 	//console
 	int frame=0;
 	double delta;
-	chrono::steady_clock::time_point tic = chrono::steady_clock::now();;
+	chrono::steady_clock::time_point tic = chrono::steady_clock::now();
 	chrono::steady_clock::time_point toc = chrono::steady_clock::now();
 	
 	/* define matrices */
@@ -95,16 +145,12 @@ void OpticalFlow(char* path){
 	// for each frame calculate optical flow
 	// take out frame- still distorted
 	while (!end_of_file){
-		try{
-			origFrame = currentframe;
-			if (origFrame.empty()) continue;
-		}
-		catch (...){
-			cout << "image not found" << endl;
-			continue;
-		}
-		if (frame > 1500) break; //for some reson after 1500 frame the app crash.
+	
+		origFrame = currentframe;
+		if (origFrame.empty()) continue;
+	
 		frame++;
+		
 		// convert to gray
 		cvtColor(origFrame, processedFrame, COLOR_BGR2GRAY, CV_8U);
 
@@ -120,8 +166,7 @@ void OpticalFlow(char* path){
 #endif
 
 			// calculate flow per section - each section in different thread
-			sectionInfo topLeft, topRight;
-			sectionInfo bottomLeft, bottomRight;
+			
 
 			topLeft.frameSection = UMat(gray, Range(0.2*HEIGHT_RES, HEIGHT_RES*0.55), Range(0.2*WIDTH_RES, WIDTH_RES*0.55));
 			topLeft.prevFrameSection = UMat(prevgray, Range(0.2*HEIGHT_RES, HEIGHT_RES*0.55), Range(0.2*WIDTH_RES, WIDTH_RES*0.55));
@@ -142,20 +187,27 @@ void OpticalFlow(char* path){
 			bottomRight.prevFrameSection = UMat(prevgray, Range(0.45*HEIGHT_RES, HEIGHT_RES*0.8), Range(WIDTH_RES*0.45, WIDTH_RES*0.8));
 			bottomRight.index = 3;
 			bottomRight.grid = globalGrid;
+			
+			
+			if (!init)
+				cout << "initializing..." << endl;
 
-			pthread_t topLeft_thread, topRight_thread;
-			pthread_t bottomLeft_thread, bottomRight_thread;
+			run_OF_threads(topLeft, topRight, bottomLeft, bottomRight);
+
+			/*
 			pthread_create(&topLeft_thread, NULL, OpticalFlowPerSection, &topLeft);
 			pthread_create(&topRight_thread, NULL, OpticalFlowPerSection, &topRight);
 			pthread_create(&bottomLeft_thread, NULL, OpticalFlowPerSection, &bottomLeft);
 			pthread_create(&bottomRight_thread, NULL, OpticalFlowPerSection, &bottomRight);
 
-			if (!init)
-				cout << "initializing..." << endl;
+			
+
 			pthread_join(topLeft_thread, NULL);
 			pthread_join(topRight_thread, NULL);
 			pthread_join(bottomLeft_thread, NULL);
 			pthread_join(bottomRight_thread, NULL);
+			*/
+			
 			if (!init){
 				cout << "Go!" << endl;
 				//start clock
@@ -166,16 +218,16 @@ void OpticalFlow(char* path){
 				cout << "frame: " << frame << " offset: " << offset << endl;
 			init = 1;
 			// merge the outputs
-			/*max
+			/*max*/
 			lastFlowStep.x = max(max(lastFlowStepSections[0].x, lastFlowStepSections[1].x) ,max( lastFlowStepSections[2].x, lastFlowStepSections[3].x));
 			lastFlowStep.y = max(max(lastFlowStepSections[0].y, lastFlowStepSections[1].y), max( lastFlowStepSections[2].y, lastFlowStepSections[3].y));
-			*/
+			
 
 
-			/*avg*/
+			/*avg
 			lastFlowStep.x = (lastFlowStepSections[0].x + lastFlowStepSections[1].x + lastFlowStepSections[2].x + lastFlowStepSections[3].x) / 4;
 			lastFlowStep.y = (lastFlowStepSections[0].y + lastFlowStepSections[1].y + lastFlowStepSections[2].y + lastFlowStepSections[3].y) / 4;
-			
+			*/
 			// calculate range of view - 2*tan(fov/2)*distance
 #ifdef SONAR_ACTIVE
 			// currently dont take the median, take the last sample
@@ -201,7 +253,7 @@ void OpticalFlow(char* path){
 				//cout << "Sonar with factor: " << distanceSonar << endl;
 
 				// calculate final x, y location (apply prediction)
-				locationStruct locationCorrectionAfterYaw;
+				
 				locationCorrectionAfterYaw.x = ((lastFlowStep.x - predLocation.x) / WIDTH_RES)*rovX;
 				locationCorrectionAfterYaw.y = ((lastFlowStep.y - predLocation.y) / HEIGHT_RES)*rovY;
 
@@ -226,7 +278,7 @@ void OpticalFlow(char* path){
 			else{
 
 				// calculate final x, y location
-				locationStruct locationCorrectionAfterYaw;
+				
 				locationCorrectionAfterYaw.x = (lastFlowStep.x / WIDTH_RES)*rovX;
 				locationCorrectionAfterYaw.y = (lastFlowStep.y / HEIGHT_RES)*rovY;
 
@@ -246,14 +298,22 @@ void OpticalFlow(char* path){
 #ifdef QT
 			w.UpdatePlot(currLocation.x, currLocation.y);
 #endif
-			
+			gyro_z_filter.push_n_calc(GyroFromSensors.z);
+			if (gyro_z_filter.avg > gyro_threshold){
+				alpha = 0.95;
+				//cout << "yaw detected " << gyro_z_filter.avg << endl;
+			}
+			else
+				alpha = 0.0;
 			filteredLocation.x = alpha * filteredLocation.x + (1 - alpha) * currLocation.x;
 			filteredLocation.y = alpha * filteredLocation.y + (1 - alpha) * currLocation.y;
  			
 
-			(*output) << offset << "," << currLocation.x << "," << currLocation.y << endl;
-			//cout << offset << "," << currLocation.x << "," << currLocation.y << endl;
-			//cout << offset << "," << filteredLocation.x << "," << filteredLocation.y << endl;
+			//(*output)<< offset << "," << currLocation.x << "," << currLocation.y << endl;
+			//(*output) << offset << "," << filteredLocation.x << "," << filteredLocation.y << endl;
+			x.push_back(filteredLocation.x);
+			y.push_back(filteredLocation.y);
+			time.push_back(offset);
 		}
 
 		/*break conditions
@@ -273,7 +333,19 @@ void OpticalFlow(char* path){
 	//calc delta
 	delta = (chrono::duration_cast<chrono::milliseconds>(toc - tic).count());
 	cout << "total runtime - " << delta / 1000 << " seconds. \nActual test length - " << offset << endl;
-
+	
+	vector<float>::iterator itr_x;
+	vector<float>::iterator itr_y;
+	vector<float>::iterator itr_time;
+	itr_x = x.begin();
+	itr_y = y.begin();
+	itr_time = time.begin();
+	for (; itr_x < x.end(); itr_x++){
+		(*output) << *itr_time << "," << *itr_x << "," << *itr_y << endl;
+		itr_y++;
+		itr_time++;
+	}
+	
 	output->close();
 	return ;
 }

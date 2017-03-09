@@ -77,7 +77,8 @@ void *OpticalFlowPerSection(void *currSectionInfo)
 	std::vector<float> error;
 
 	// 2. send to optical flow algorithm
-	cv::calcOpticalFlowPyrLK(
+	
+		cv::calcOpticalFlowPyrLK(
 		currSection->prevFrameSection, currSection->frameSection, // 2 consecutive images
 		currSection->grid, // input point positions in first im
 		pyrLKOutput, // output point positions in the 2nd
@@ -87,7 +88,7 @@ void *OpticalFlowPerSection(void *currSectionInfo)
 		3,
 		TermCriteria(TermCriteria::COUNT + TermCriteria::EPS, 5, 0.01)
 		);
-
+		
 	int counter = 0;
 	float distPixelx = 0;
 	float distPixely = 0;
@@ -114,6 +115,6 @@ void *OpticalFlowPerSection(void *currSectionInfo)
 		lastFlowStepSections[currSection->index].x = 0;
 		lastFlowStepSections[currSection->index].y = 0;
 	}
-
+	
 	return NULL;
 }
