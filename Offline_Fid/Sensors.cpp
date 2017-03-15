@@ -39,7 +39,7 @@ atomic<bool> eulerSpeedChanged;//dont know what it doest
 Mat currentframe;
 float distanceSonar;
 float offset;
-
+int updated = 0;
 //Functions
 void *open_data(char* path){
 	//initialize
@@ -95,10 +95,12 @@ void *updateSensors(void *args){
 	*VIDEO >> currentframe;
 	jank = currentframe;
 	*VID_timestamp >> video_time;
+	updated = 1;
 	//loop pull
 	while (!(IMU->eof())){
 		if (init){
-			tic = chrono::steady_clock::now();
+
+			updated = 0;
 			
 			prevEulerFromSensors = eulerFromSensors;
 			*IMU >> file_time >> comma >> gpslon >> comma >> gpslat >> comma >> alt >> comma >> AccX >> comma >> AccY >> comma >> AccZ >> comma >> roll >> comma >> pitch >> comma >> yaw >> comma >> jank_data >> comma >> jank_data >> comma >> gyro_x >> comma >> gyro_y >> comma >> gyro_z;
@@ -122,19 +124,20 @@ void *updateSensors(void *args){
 			*VIDEO >> currentframe;
 			*VID_timestamp >> video_time;
 			if (currentframe.empty() || VID_timestamp->eof()){
+				updated = 1;
 				end_of_file = 1;
 				return NULL;
 				//return;
 			}
-			//cout << "alive offset: " << file_time << endl;
-			toc = chrono::steady_clock::now();
-			while ((chrono::duration_cast<chrono::milliseconds>(toc - tic).count()) < 100){
-				Sleep(10);
-				toc = chrono::steady_clock::now();
+			updated = 1;
+			Sleep(6);
+			while (!ready_4_data){
+				Sleep(5);
+				updated = 0;
 			}
-			//Sleep(94); //0.1 sec minus read time 0.05 sec
 		}
 	}
+	updated = 1;
 	end_of_file = 1;
 	return NULL;
 	//return;

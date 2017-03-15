@@ -61,6 +61,8 @@ extern Mat prevframe;
 // flag- active operation
 extern int active;
 extern int init;
+extern int ready_4_data;
+extern int updated;
 // GPS initial and current coordinates
 extern gpsCoords currGPSCoords;
 extern gpsCoords initGPSCoords;

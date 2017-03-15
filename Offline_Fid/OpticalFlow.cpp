@@ -12,6 +12,7 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
+#include "windows.h"
 // OpenCV
 #include "opencv2/video/tracking.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -34,6 +35,7 @@ locationStruct lastFlowStep;
 locationStruct lastFlowStepSections[4];
 locationStruct gpsLocation;
 int init=0;
+int ready_4_data = 0;
 class gyro_buffer{
 public:
 	float buffer[10];
@@ -109,6 +111,7 @@ void OpticalFlow(char* path){
 	strcat_s(File_name_OUTPUT, "\\OF_log.csv");
 	std::ofstream *output;
 	output = new std::ofstream(File_name_OUTPUT, std::ofstream::out);
+	
 	//console
 	int frame=0;
 	double delta;
@@ -145,11 +148,16 @@ void OpticalFlow(char* path){
 	// for each frame calculate optical flow
 	// take out frame- still distorted
 	while (!end_of_file){
-	
+		while (!updated){
+			Sleep(5);
+		}
+		ready_4_data = 0;
 		origFrame = currentframe;
 		if (origFrame.empty()) continue;
 	
 		frame++;
+		cout << ".";
+		//lock update
 		
 		// convert to gray
 		cvtColor(origFrame, processedFrame, COLOR_BGR2GRAY, CV_8U);
@@ -192,21 +200,9 @@ void OpticalFlow(char* path){
 			if (!init)
 				cout << "initializing..." << endl;
 
-			run_OF_threads(topLeft, topRight, bottomLeft, bottomRight);
-
-			/*
-			pthread_create(&topLeft_thread, NULL, OpticalFlowPerSection, &topLeft);
-			pthread_create(&topRight_thread, NULL, OpticalFlowPerSection, &topRight);
-			pthread_create(&bottomLeft_thread, NULL, OpticalFlowPerSection, &bottomLeft);
-			pthread_create(&bottomRight_thread, NULL, OpticalFlowPerSection, &bottomRight);
-
 			
-
-			pthread_join(topLeft_thread, NULL);
-			pthread_join(topRight_thread, NULL);
-			pthread_join(bottomLeft_thread, NULL);
-			pthread_join(bottomRight_thread, NULL);
-			*/
+			run_OF_threads(topLeft, topRight, bottomLeft, bottomRight);
+			
 			
 			if (!init){
 				cout << "Go!" << endl;
@@ -215,8 +211,9 @@ void OpticalFlow(char* path){
 			}
 				
 			if (!(frame % 50))
-				cout << "frame: " << frame << " offset: " << offset << endl;
+				cout << "\nframe: " << frame << " offset: " << offset << endl;
 			init = 1;
+			ready_4_data = 1;
 			// merge the outputs
 			/*max*/
 			lastFlowStep.x = max(max(lastFlowStepSections[0].x, lastFlowStepSections[1].x) ,max( lastFlowStepSections[2].x, lastFlowStepSections[3].x));
