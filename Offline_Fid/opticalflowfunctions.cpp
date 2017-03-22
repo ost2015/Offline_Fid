@@ -13,11 +13,11 @@ void createGrid(vector<cv::Point2f> &grid, int16_t wRes, int16_t hRes, int step)
 
 /* this function finds the right location according yaw angle*/
 locationStruct calculateNewLocationByYaw(locationStruct lastFlowStep){
-	float yYaw = eulerFromSensors.yaw - PI / 2;
+	//float yYaw = eulerFromSensors.yaw - PI / 2;
 	locationStruct outputLocation;
 
-	outputLocation.x = lastFlowStep.x * cos(eulerFromSensors.yaw) + lastFlowStep.y * cos(yYaw);
-	outputLocation.y = +(lastFlowStep.x * sin(eulerFromSensors.yaw) + lastFlowStep.y * sin(yYaw));
+	outputLocation.x = lastFlowStep.x * cos(eulerFromSensors.yaw) + lastFlowStep.y * sin(eulerFromSensors.yaw);
+	outputLocation.y = lastFlowStep.x * sin(eulerFromSensors.yaw) + lastFlowStep.y * cos(eulerFromSensors.yaw);
 
 	return outputLocation;
 }
