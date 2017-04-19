@@ -1,6 +1,6 @@
 @echo off
 
-if %1="" goto blank
+REM if %1="" goto blank
 for /R %1 %%a in (*.txt) do ( 
 	echo runs %%~na 
 	..\x64\Release\Offline_Fid.exe %%~dpa\ 
