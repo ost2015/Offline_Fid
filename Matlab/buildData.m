@@ -9,6 +9,10 @@ RawRoll = deg2rad(rawData.Pitch);
 RawPitch = deg2rad(rawData.Roll);
 [Roll,Pitch] = FindAngle(rawData,alpha);
 Yaw = deg2rad(rawData.Heading);
+gyro_x = rawData.gyro_x;
+gyro_y = rawData.gyro_y;
+gyro_z = rawData.gyro_z;
 dt = 1/10;
 Time = 0:dt:(length(rawData.AccX)-1)*dt;
-Data = [Time',Long,Lat,Alt,AccX,AccY,AccZ,Roll,Pitch,Yaw,RawRoll,RawPitch];
+Data = [Time',Long,Lat,Alt,AccX,AccY,AccZ,Roll,Pitch,Yaw,RawRoll,RawPitch...
+    gyro_x,gyro_y,gyro_z];
