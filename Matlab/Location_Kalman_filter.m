@@ -13,28 +13,32 @@ imu_table = table2array(readtable([filename,folder,'IMU.csv']));
 % 
 N = min(size(location_table,1),size(imu_table,1));
 x=1;y=2;acc_x=3;acc_y=4;acc_z=5;theta=6;phi=7;psi=8;
-z(x,:)       = location_table(1:N,2);
+z(x,:)       = location_table(1:N,2); %[cm]
 z(y,:)       = location_table(1:N,3);
-z(acc_x,:)   = imu_table(1:N,5);
-z(acc_y,:)   = imu_table(1:N,6);
-z(acc_z,:)   = imu_table(1:N,7);
+z(acc_x,:)   = imu_table(1:N,5)*100; %[cm/s^2]
+z(acc_y,:)   = imu_table(1:N,6)*100;
+z(acc_z,:)   = imu_table(1:N,7)*100;
 z(phi,:)     = imu_table(1:N,8);
 z(theta,:)   = imu_table(1:N,9);
 z(psi,:)     = imu_table(1:N,10);
 %% noise from sampling
 n_x = [10];
 n_y = [10];
-n_ax = [9e-06];
-n_ay = [9e-06];
-n_az = [1.6e-05]; 
+n_ax = [9e-06*100];
+n_ay = [9e-06*100];
+n_az = [1.6e-05*100]; 
 n_theta = [0.005];
 n_phi = [4e-04];
 n_psi = [4e-06];
 %% Kalman parameters
+M = 1;
 dt =  0.1;
 R_c = diag([n_x,n_y,n_ax,n_ay,n_az,n_theta,n_phi,n_psi]) ; % matrix for the sensors noise
 K.R = R_c / dt;
-K.Q = 1000*eye(6); % matrix for process noise
+b1 = 10*ones(1,2); % location
+b2 = 10*ones(1,2); % velocity
+b3 = 1000*ones(1,2); % acc
+K.Q = diag([b1,b2,b3]); % matrix for process noise
 K.A = [1    dt  0.5*dt^2    0   0   0; ...
        0    1   dt          0   0   0; ...
        0    0   1           0   0   0; ...
@@ -60,7 +64,7 @@ for ii = 1:N % number of samples
            0    0   0   0   0   0; ...
            0    0   0   0   0   0; ...
            0    0   0   0   0   0];
-    K = KF_func(K,ii);
+    K = KF_func(K,ii,M);
 end
 %% plot results
 figure;
@@ -68,4 +72,4 @@ hold on;
 plot(z(x,:),z(y,:),'r');
 plot(K.x_est_m(x,:),K.x_est_m(y,:),'b');
 plot(K.x_est_p(x,:),K.x_est_p(y,:),'g');
-legend('x','x_{est}^-','x_{est}^+');
+legend('x_{OF}','x_{est}^-','x_{est}^+');
