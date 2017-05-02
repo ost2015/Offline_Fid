@@ -2,8 +2,8 @@ ccc;
 %% define variables
 Time=1;Long=2; Lat=3;Alt=4;AccX=5;AccY=6;AccZ=7;Roll=8;Pitch=9;Yaw=10;
 RawRoll=11;RawPitch=12;gyro_x=13;gyro_y=14;gyro_z=15;
-ReadDest = 'C:\Users\Nir\Documents\Offline_Fid\Raw_Data\';
-SaveDest = 'C:\Users\Nir\Documents\Offline_Fid\Test_vector\';
+ReadDest = '..\Raw_Data\';
+SaveDest = '..\Test_vector\';
 alpha = 0.3; %roll & pitch filter coefficient
 f_desire = 10; % desired system frequency [Hz]
 f_real = 10; % real system frequency [Hz]
@@ -15,7 +15,7 @@ jump_in_freq = 0;
 altitude = 2; % in meter
 %% main code for csv
 directories = dir(ReadDest);
-for m = 13:14%(length(directories))
+for m = 16%(length(directories))
     if (~directories(m).isdir)
         break;
     end

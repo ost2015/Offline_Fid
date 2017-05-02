@@ -3,7 +3,8 @@ time = 1; x = 2; y = 3;
 NumOfFiles = 2;
 load('Routelength.mat');
 TestNames = {'angle_correction','angle_correction'};%{'max_with_yaw_detection','mean_method'};
-ReadDest = ['C:\Users\Nir\Documents\Offline_Fid\Results\'];
+ReadDest = '..\Results\';
+ReadTiming = '..\Test_vector\';
 for jj = 1:length(TestNames)
     directories = dir([ReadDest,TestNames{jj},'\']);
     for ii=1:length(directories)
@@ -33,10 +34,10 @@ for jj = 1:length(TestNames)
 end
 for ii = 3:14
     figure;
-    plot(logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1,y),logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1,x),'or','linewidth',4);
+    plot(-logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1,x),logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1,y),'or','linewidth',4);
     hold on;
-    plot(logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1:end-10,y),logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1:end-10,x),'-b');
-    plot(logFile.(TestNames{2}).(sprintf('Exper%d',ii-2))(1:end-10,y),logFile.(TestNames{2}).(sprintf('Exper%d',ii-2))(1:end-10,x),'-m');
+    plot(-logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1:end-10,x),logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(1:end-10,y),'-b');
+    plot(-logFile.(TestNames{2}).(sprintf('Exper%d',ii-2))(1:end-10,x),logFile.(TestNames{2}).(sprintf('Exper%d',ii-2))(1:end-10,y),'-m');
     dist(1)=sqrt( logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(end,y)^2 + logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(end,x)^2)/100;
     dist(2)=sqrt( logFile.(TestNames{2}).(sprintf('Exper%d',ii-2))(end,y)^2 + logFile.(TestNames{2}).(sprintf('Exper%d',ii-2))(end,x)^2)/100;
     if Routelength(ii-2)
@@ -50,9 +51,11 @@ for ii = 3:14
     grid on;
     axis square;
     if exist ([ReadDest,'Timing\timing_',directories(ii).name,'.csv'])
-        timing = readtable([ReadDest,'Timing\timing_',directories(ii).name,'.csv']);
+        IMUtable = readtable([ReadTiming,directories(ii).name,'\IMU.csv']);
+        timing =readtable([ReadDest,'Timing\timing_',directories(ii).name,'.csv']);
+        yaw = [IMUtable(:,1), IMUtable(:,10)];
         timing.time(end) = logFile.(TestNames{1}).(sprintf('Exper%d',ii-2))(end,1);
-        Route = RealRoute(timing);
+        Route = RealRoute(timing,yaw);
         plot(Route(2,:),Route(1,:),'--g');
         Route = [];
         legend('start','our estimate','2016 estimate','Real');
