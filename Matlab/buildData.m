@@ -1,3 +1,9 @@
+% function Data = buildData(rawData,altitude,alpha)
+% inputs:   rawData - raw Data from sensors in a table
+%           altitude - height [m]
+%           alpha - alpha for MA on roll and pitch
+% outputs:  Data - final data table
+
 function  Data = buildData(rawData,altitude,alpha)
 Long = rawData.Longitude;
 Lat = rawData.Latitude;

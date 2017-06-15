@@ -1,3 +1,9 @@
+% function [Roll,Pitch] = FindAngle(rawData,alpha)
+% inputs:   rawData - raw Data from sensors in a table
+%           alpha - alpha for MA on roll and pitch
+% outputs:  Roll  
+%           Pitch 
+
 function [Roll,Pitch] = FindAngle(rawData,alpha)
 
 rawGyroX = rawData.gyro_x; rawGyroY = rawData.gyro_y;

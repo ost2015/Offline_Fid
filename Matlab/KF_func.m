@@ -1,3 +1,10 @@
+% function K = KF_func(K,ii,M,turn)
+% inputs:   K - Kalman Filter matrices
+%           ii - iteration from the main function
+%           M - number of iteration to calculate R,Q upon
+%           turn - gyro_z after the MA.
+% outputs:  K - Kalman Filter matrices
+
 function K = KF_func(K,ii,M,turn)
 % % calculate R and Q manually
 % if isfield(K,'v')
@@ -19,6 +26,7 @@ function K = KF_func(K,ii,M,turn)
 % else
 %     K.v(:,1) = K.z-K.H*K.x_est_m(:,ii);
 % end
+
 K.K = K.P_est_m(:,:,ii)*K.H'*(K.H*K.P_est_m(:,:,ii)*K.H'+K.R)^-1;
 K.x_est_p(:,ii) = K.x_est_m(:,ii) + K.K*(K.z-K.H*K.x_est_m(:,ii));
 K.P_est_p(:,:,ii) = (eye(6)-K.K*K.H)*K.P_est_m(:,:,ii);

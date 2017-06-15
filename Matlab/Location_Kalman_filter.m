@@ -1,8 +1,8 @@
-ccc;
+clear all; close all; clc;
 %% load data after yaw
 % location table
 filename_result = '..\Results\';
-experiment = 'angle_correction\';
+experiment = 'max_method';
 folder = dir([filename_result,experiment]);
 folder(1:2) = [];
 for jj = 1:size(folder,1)
